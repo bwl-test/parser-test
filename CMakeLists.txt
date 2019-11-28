@@ -10,3 +10,4 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(cmake/vendor.cmake)
 add_subdirectory(modules)
+add_subdirectory(tests)
