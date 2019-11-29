@@ -5,3 +5,4 @@ execute_process(
 
 include(vendor/lexertl14.cmake)
 add_subdirectory(vendor/catch2)
+add_subdirectory(vendor/fmt)
