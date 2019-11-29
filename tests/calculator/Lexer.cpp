@@ -6,8 +6,8 @@ using namespace parsertest::caculator;
 
 TEST_CASE("get token test", "lexter-test") {
     const std::string str = R"(
-        1+2;
-        3+4
+        1 + 2;
+        3 + 4
         3.1415926*20
         3.1415927E20 + 10
     )";

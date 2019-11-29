@@ -11,6 +11,7 @@ enum TokenType {
     TokenType_DIV,
     TokenType_LP,
     TokenType_RP,
+    TokenType_SIMICOLON,
     TokenType_NUM,
     TokenType_IGNORE,
 };
