@@ -26,3 +26,39 @@ TEST_CASE("normal test", "lexer") {
         lexertl::lookup(sm, results);
     }
 }
+
+TEST_CASE("recursive test", "lexer") {
+    enum {eEOI, eComment};
+    lexertl::rules rules;
+    lexertl::state_machine sm;
+    std::string input("/* /* recursive */*/");
+
+    rules.push_state("OPEN");
+
+    rules.push("INITIAL,OPEN", "[/][*]", ">OPEN");
+    rules.push("OPEN", ".{+}[\r\n]", ".");
+    rules.push("OPEN", "[*][/]", 1, "<");
+    lexertl::generator::build(rules, sm);
+
+    lexertl::srmatch results(input.begin(), input.end());
+
+    // Read ahead
+    lexertl::lookup(sm, results);
+
+    while (results.id != eEOI && results.id != results.npos())
+    {
+        switch (results.id)
+        {
+            case eComment:
+                std::cout << results.str() << std::endl;
+                break;
+            default:
+                std::cout << "Error at '" << &*results.first << "'\n";
+                break;
+        }
+
+        lexertl::lookup(sm, results);
+    }
+}
+
+
