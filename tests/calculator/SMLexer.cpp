@@ -1,4 +1,4 @@
-#include <calculator/Lexer.h>
+#include <calculator/SMLexer.h>
 #include <catch2/catch.hpp>
 #include <iostream>
 
@@ -13,7 +13,7 @@ TEST_CASE("get token test", "lexter-test") {
         3.1415927E20 + 10
     )";
 
-    Lexer lexer{str};
+    SMLexer lexer{str};
 
     while (true) {
         auto token = lexer.nextToken();

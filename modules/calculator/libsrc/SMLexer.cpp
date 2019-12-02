@@ -1,4 +1,4 @@
-#include <calculator/Lexer.h>
+#include <calculator/SMLexer.h>
 #include <lexertl/generator.hpp>
 #include <lexertl/lookup.hpp>
 #include <iostream>
@@ -7,7 +7,7 @@
 
 namespace parsertest { namespace caculator {
 
-Lexer::Lexer(const std::string &str) : _str(str), _results(str.begin(), str.end()) {
+SMLexer::SMLexer(const std::string &str) : _str(str), _results(str.begin(), str.end()) {
     lexertl::rules rules;
 
     rules.push_state("COMMAND");
@@ -28,12 +28,12 @@ Lexer::Lexer(const std::string &str) : _str(str), _results(str.begin(), str.end(
     lexertl::generator::build(rules, _sm);
 }
 
-void Lexer::errorOut(const std::string &err) const {
+void SMLexer::errorOut(const std::string &err) const {
     auto errdetail = fmt::format("{0} at line {1} column {2} char: \"{3}\"", err, _line, _column-1, _currSubStr);
     throw std::runtime_error{errdetail};
 }
 
-Token Lexer::nextToken() {
+Token SMLexer::nextToken() {
     lookup();
     
     while (_results.id == TokenType_IGNORE) {
@@ -52,7 +52,7 @@ Token Lexer::nextToken() {
     return token;
 }
 
-void Lexer::updateBookkeepingInfo() {
+void SMLexer::updateBookkeepingInfo() {
     if (_results.id == 0) {
         return;
     }
@@ -74,7 +74,7 @@ void Lexer::updateBookkeepingInfo() {
     _currSubStr = StringUtil::escape(str);
 }
 
-void Lexer::lookup() {
+void SMLexer::lookup() {
     lexertl::lookup(_sm, _results);
     updateBookkeepingInfo();
 }
