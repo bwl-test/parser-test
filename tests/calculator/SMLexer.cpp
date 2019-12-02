@@ -2,7 +2,7 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 
-using namespace parsertest::caculator;
+using namespace parsertest::calculator;
 
 TEST_CASE("get token test", "lexter-test") {
     const std::string str = R"(

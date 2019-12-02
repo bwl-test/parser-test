@@ -2,7 +2,7 @@
 
 #include "Lexer.h"
 
-namespace parsertest { namespace caculator {
+namespace parsertest { namespace calculator {
 
 class Parser {
 private:
@@ -11,8 +11,15 @@ private:
 public:
 	Parser(Lexer &lexer) : _lexer(lexer) {}
 	
-
-
+public:
+    void parseCmds();
+    void parseCmdsPrime();
+    void parseExpression();
+    void parseExpressionPrime();
+    void parseTerm();
+    void parseTermPrime();
+    void parseAtomic();
+    void eatToken(TokenType id);
 };
 
 }}

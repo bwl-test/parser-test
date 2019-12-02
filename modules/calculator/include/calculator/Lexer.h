@@ -2,7 +2,7 @@
 
 #include "Token.h"
 
-namespace parsertest { namespace caculator {
+namespace parsertest { namespace calculator {
 
 class Lexer {
 public:

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace parsertest { namespace caculator {
+namespace parsertest { namespace calculator {
 
 enum TokenType {
     TokenType_EOF,

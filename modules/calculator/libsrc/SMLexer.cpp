@@ -5,7 +5,7 @@
 #include <fmt/format.h>
 #include <base/Util.h>
 
-namespace parsertest { namespace caculator {
+namespace parsertest { namespace calculator {
 
 SMLexer::SMLexer(const std::string &str) : _str(str), _results(str.begin(), str.end()) {
     lexertl::rules rules;

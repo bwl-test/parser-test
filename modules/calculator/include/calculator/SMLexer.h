@@ -6,7 +6,7 @@
 #include <lexertl/state_machine.hpp>
 #include <lexertl/match_results.hpp>
 
-namespace parsertest { namespace caculator {
+namespace parsertest { namespace calculator {
 
 class SMLexer : public Lexer {
 private:
