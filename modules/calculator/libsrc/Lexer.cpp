@@ -10,16 +10,20 @@ namespace parsertest { namespace caculator {
 Lexer::Lexer(const std::string &str) : _str(str), _results(str.begin(), str.end()) {
     lexertl::rules rules;
 
-    rules.push("\\d+(\\.(\\d+)?)?((e|E)\\d+)?", TokenType_NUM);
-    rules.push("\\n", TokenType_EOL);
-    rules.push("\\+", TokenType_ADD);
-    rules.push("-", TokenType_SUB);
-    rules.push("\\*", TokenType_MUL);
-    rules.push("\\/", TokenType_DIV);
-    rules.push("\\(", TokenType_LP);
-    rules.push("\\(", TokenType_RP);
-    rules.push(";", TokenType_SIMICOLON);
-    rules.push("[\\t ]+", TokenType_IGNORE);
+    rules.push_state("COMMAND");
+    
+    rules.push("INITIAL", "\\n", TokenType_IGNORE, ".");
+    rules.push("COMMAND", "\\n", TokenType_EOL, ".");
+    
+    rules.push("*", "[\\t ]+", TokenType_IGNORE, ".");
+    rules.push("*", "\\d+(\\.(\\d+)?)?((e|E)\\d+)?", TokenType_NUM, "COMMAND");
+    rules.push("*", "\\+", TokenType_ADD, "COMMAND");
+    rules.push("*", "-", TokenType_SUB, "COMMAND");
+    rules.push("*", "\\*", TokenType_MUL, "COMMAND");
+    rules.push("*", "\\/", TokenType_DIV, "COMMAND");
+    rules.push("*", "\\(", TokenType_LP, "COMMAND");
+    rules.push("*", "\\(", TokenType_RP, "COMMAND");
+    rules.push("*", ";", TokenType_SIMICOLON, "COMMAND");
     
     lexertl::generator::build(rules, _sm);
 }
