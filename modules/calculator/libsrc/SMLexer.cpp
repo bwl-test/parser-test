@@ -22,7 +22,7 @@ SMLexer::SMLexer(const std::string &str) : _results(str.begin(), str.end()) {
     rules.push("*", "\\*", TokenType_MUL, "COMMAND");
     rules.push("*", "\\/", TokenType_DIV, "COMMAND");
     rules.push("*", "\\(", TokenType_LP, "COMMAND");
-    rules.push("*", "\\(", TokenType_RP, "COMMAND");
+    rules.push("*", "\\)", TokenType_RP, "COMMAND");
     rules.push("*", ";", TokenType_SIMICOLON, "COMMAND");
     
     lexertl::generator::build(rules, _sm);

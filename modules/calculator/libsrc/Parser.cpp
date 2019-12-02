@@ -5,23 +5,25 @@ namespace parsertest { namespace calculator {
 
 void Parser::parseCmds() {
     parseCmd();
-    parseCmdsPrime();
-    
-    if (_unhandledToken) {
-        errorOut("unexpected symbol");
+    switch (_curToken.type) {
+        case TokenType_SIMICOLON: case TokenType_EOL:
+            eatToken(_curToken.type);
+            fmt::print("\n");
+            parseCmdsPrime();
+            break;
+        
+        case TokenType_EOF:
+            fmt::print("\nparse done!\n");
+            break;
+            
+        default:
+            errorOut();
+            break;
     }
 }
 
 void Parser::parseCmdsPrime() {
-    auto const &token = nextToken();
-    
-    if (token.type==TokenType_SIMICOLON || token.type==TokenType_EOL || token.type==TokenType_EOF) {
-        fmt::print(";\n");
-        parseCmds();
-    } else {
-        setUnhandleToken(token);
-    }
-    
+    parseCmds();
     return;
 }
 
@@ -30,96 +32,107 @@ void Parser::parseCmd() {
 }
 
 void Parser::parseExpression() {
-    parseTerm();
-    parseExpressionPrime();
+    switch (_curToken.type) {
+        //positive or negtive sign;
+        case TokenType_ADD: case TokenType_SUB:
+            eatToken(_curToken.type);
+            parseAtomic();
+            break;
+            
+        case TokenType_NUM:
+            parseTerm();
+            break;
+        
+        case TokenType_LP:
+            eatToken(TokenType_LP);
+            parseExpression();
+            eatToken(TokenType_RP);
+            break;
+            
+        default:
+            errorOut();
+            break;
+    }
+    
+    switch (_curToken.type) {
+        case TokenType_MUL: case TokenType_DIV:
+            eatToken(_curToken.type);
+            parseTerm();
+            break;
+        
+        case TokenType_ADD: case TokenType_SUB:
+            eatToken(_curToken.type);
+            parseExpressionPrime();
+            break;
+            
+        case TokenType_SIMICOLON: case TokenType_EOL: case TokenType_RP: case TokenType_EOF:
+            break;
+            
+        default:
+            errorOut();
+            break;
+    }
 }
 
 void Parser::parseExpressionPrime() {
-    auto const &token = nextToken();
-    if (token.type!=TokenType_ADD || token.type!=TokenType_SUB) {
-        errorOut("unexpected symbol");
-    }
-    
-    if (token.type==TokenType_ADD) {
-        fmt::print(" operator + ");
-        parseExpression();
-        return;
-    }
-    
-    if (token.type==TokenType_SUB) {
-        fmt::print(" operator - ");
-        parseExpression();
-        return;
-    }
-    
+    parseExpression();
     return;
 }
 
 void Parser::parseTerm() {
     parseAtomic();
-    parseTermPrime();
+    switch (_curToken.type) {
+        case TokenType_MUL: case TokenType_DIV:
+            eatToken(_curToken.type);
+            parseTermPrime();
+            break;
+        
+        case TokenType_ADD: case TokenType_SUB:
+        case TokenType_SIMICOLON: case TokenType_EOL:
+        case TokenType_RP:  case TokenType_EOF:
+            break;
+            
+        default:
+            errorOut();
+            break;
+    }
 }
 
 void Parser::parseTermPrime() {
-    auto const &token = nextToken();
-    if (token.type==TokenType_MUL) {
-        fmt::print(" operator * ");
-        parseTerm();
-        return;
-    } else if (token.type==TokenType_DIV) {
-        fmt::print(" operator / ");
-        parseTerm();
-        return;
-    }
-    
-    errorOut("unexpected symbol");
+    parseTerm();
     return;
 }
 
 void Parser::parseAtomic() {
-    auto const &token = nextToken();
+    auto const &token = _curToken;
     switch (token.type) {
         case TokenType_NUM:
-            fmt::print("{}", token.value);
+            fmt::print(" {} ", token.value);
+            loadToken();
             break;
-            
+        
         case TokenType_LP:
-            fmt::print("(");
+            eatToken(TokenType_LP);
             parseExpression();
+            eatToken(TokenType_RP);
             break;
-            
-        case TokenType_RP:
-            fmt::print(")");
-            break;
-            
-        case TokenType_SUB:
-            fmt::print("-");
-            parseAtomic();
-            break;
-            
-        case TokenType_ADD:
-            fmt::print("+");
-            parseAtomic();
-            break;
-            
+
         default:
-            errorOut("unexpected symbol");
+            errorOut();
             break;
     }
-    
-    nextToken();
 }
 
-void Parser::eatToken(const std::function<bool (const Token &)> &predict) {
-    auto token = _lexer.nextToken();
-    if (!predict(token)) {
-        errorOut("unexpected symbol");
+void Parser::eatToken(TokenType toketype) {
+    if (toketype != _curToken.type) {
+        errorOut();
     }
+    loadToken();
 }
 
-void Parser::errorOut(const std::string &err) const {
+void Parser::errorOut() const {
     auto const &bbl = _lexer.getBookingBlock();
-    auto errdetail = fmt::format("{0} at line {1} column {2}: \"{3}\"", err, bbl.line, bbl.column-1, bbl.tokenString());
+    auto errdetail = fmt::format("{0} at line {1} column {2}: \"{3}\"", "unexpected symbol", bbl.line, bbl.column-1, bbl.tokenString());
     throw std::runtime_error{errdetail};
 }
 

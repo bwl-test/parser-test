@@ -9,25 +9,15 @@ namespace parsertest { namespace calculator {
 class Parser {
 private:
 	Lexer &_lexer;
-    std::optional<Token> _unhandledToken;
+    Token _curToken;
 
 public:
-	Parser(Lexer &lexer) : _lexer(lexer) {}
-    
-    inline Token nextToken() {
-        Token retToken;
-        if (_unhandledToken) {
-            retToken = *_unhandledToken;
-            _unhandledToken = {};
-        } else {
-            retToken = _lexer.nextToken();
-        }
-        
-        return retToken;
+	Parser(Lexer &lexer) : _lexer(lexer) {
+        loadToken();
     }
     
-    void setUnhandleToken(const Token &token) {
-        _unhandledToken = token;
+    inline void loadToken() {
+        _curToken = _lexer.nextToken();
     }
 	
 public:
@@ -40,9 +30,9 @@ public:
     void parseTermPrime();
     void parseAtomic();
     
-    void eatToken(const std::function<bool (const Token &)> &predic);
+    void eatToken(TokenType toketype);
     
-    void errorOut(const std::string &) const;
+    void errorOut() const;
 };
 
 }}
