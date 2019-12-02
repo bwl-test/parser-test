@@ -19,9 +19,6 @@ enum TokenType {
 struct Token {
     TokenType type;
     double value;   //目前只支持dobule型数字
-    
-    int line{1};
-    int column{1};
 };
 
 }}

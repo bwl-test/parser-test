@@ -10,19 +10,17 @@ namespace parsertest { namespace calculator {
 
 class SMLexer : public Lexer {
 private:
-    const std::string &_str;
     lexertl::state_machine _sm;
     lexertl::smatch _results;
-    int _line{1}; int _column{1};
-    std::string _currSubStr;
+    BookingBlock _bbl;
 
 public:
     SMLexer(const std::string &str);
     Token nextToken() override;
+	inline const BookingBlock& getBookingBlock() const override { return _bbl;}
     
 private:
     void errorOut(const std::string &err) const;
-    void updateBookkeepingInfo();
     void lookup();
 };
 

@@ -7,7 +7,7 @@
 
 namespace parsertest { namespace calculator {
 
-SMLexer::SMLexer(const std::string &str) : _str(str), _results(str.begin(), str.end()) {
+SMLexer::SMLexer(const std::string &str) : _results(str.begin(), str.end()) {
     lexertl::rules rules;
 
     rules.push_state("COMMAND");
@@ -29,7 +29,7 @@ SMLexer::SMLexer(const std::string &str) : _str(str), _results(str.begin(), str.
 }
 
 void SMLexer::errorOut(const std::string &err) const {
-    auto errdetail = fmt::format("{0} at line {1} column {2} char: \"{3}\"", err, _line, _column-1, _currSubStr);
+    auto errdetail = fmt::format("{0} at line {1} column {2} char: \"{3}\"", err, _bbl.line, _bbl.column-1, _bbl.tokenString());
     throw std::runtime_error{errdetail};
 }
 
@@ -52,31 +52,9 @@ Token SMLexer::nextToken() {
     return token;
 }
 
-void SMLexer::updateBookkeepingInfo() {
-    if (_results.id == 0) {
-        return;
-    }
-    
-    auto str = _results.str();
-    if (str.empty()) {
-        throw std::logic_error{"match reulst str empty!"};
-    }
-    
-    for (auto ch : str) {
-        if (ch == '\n') {
-            ++_line;
-            _column = 1;
-        } else {
-            ++_column;
-        }
-    }
-    
-    _currSubStr = StringUtil::escape(str);
-}
-
 void SMLexer::lookup() {
     lexertl::lookup(_sm, _results);
-    updateBookkeepingInfo();
+    _bbl.updateTokenString(_results.str());
 }
 
 }}
