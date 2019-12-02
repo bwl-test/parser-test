@@ -4,6 +4,11 @@
 namespace parsertest { namespace calculator {
 
 void Parser::parseCmds() {
+    if (_curToken.type == TokenType_EOF) {
+        fmt::print("empty file!\n");
+        return;
+    }
+    
     parseCmd();
     switch (_curToken.type) {
         case TokenType_SIMICOLON: case TokenType_EOL:

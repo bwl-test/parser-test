@@ -16,3 +16,12 @@ TEST_CASE("parser test", "parser-test") {
 	Parser parser{lexer};
 	parser.parseCmds();
 }
+
+TEST_CASE("empty file parse test", "parser-test") {
+    const std::string str = R"(
+)";
+
+    SMLexer lexer{str};
+    Parser parser{lexer};
+    parser.parseCmds();
+}
