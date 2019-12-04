@@ -17,12 +17,11 @@ void Parser::parseCmdsPrime() {
     switch (_curToken.type) {
         case TokenType_SIMICOLON: case TokenType_EOL:
             eatToken(_curToken.type);
-            fmt::print("\n");
             parseCmds();
             break;
         
         case TokenType_EOF:
-            fmt::print("\nparse done!\n");
+            fmt::print("parse done!\n");
             break;
             
         default:
@@ -34,20 +33,27 @@ void Parser::parseCmdsPrime() {
 }
 
 void Parser::parseCmd() {
-    parseExpression();
+    auto ret = parseExpression();
+    fmt::print("{}\n", ret);
 }
 
-void Parser::parseExpression() {
-    parseTerm();
-    parseExpressionPrime();
+double Parser::parseExpression() {
+    auto left = parseTerm();
+    return parseExpressionPrime(left);
 }
 
-void Parser::parseExpressionPrime() {
+double Parser::parseExpressionPrime(double left) {
+    auto ret = left;
     switch (_curToken.type) {
         //exp' -> (+|-) exp
-        case TokenType_ADD: case TokenType_SUB:
+        case TokenType_ADD:
             eatToken(_curToken.type);
-            parseExpression();
+            ret += parseExpression();
+            break;
+            
+        case TokenType_SUB:
+            eatToken(_curToken.type);
+            ret -= parseExpression();
             break;
             
         //exp' -> epsilon
@@ -61,19 +67,25 @@ void Parser::parseExpressionPrime() {
             break;
     }
     
-    return;
+    return ret;
 }
 
-void Parser::parseTerm() {
-    parseFactor();
-    parseTermPrime();
+double Parser::parseTerm() {
+    auto left = parseFactor();
+    return parseTermPrime(left);
 }
 
-void Parser::parseTermPrime() {
+double Parser::parseTermPrime(double left) {
+    auto ret = left;
     switch (_curToken.type) {
-        case TokenType_MUL: case TokenType_DIV:
+        case TokenType_MUL:
             eatToken(_curToken.type);
-            parseTerm();
+            ret *= parseTerm();
+            break;
+            
+        case TokenType_DIV:
+            eatToken(_curToken.type);
+            ret /= parseTerm();
             break;
         
         case TokenType_ADD: case TokenType_SUB:
@@ -86,33 +98,41 @@ void Parser::parseTermPrime() {
             break;
     }
     
-    return;
+    return ret;
 }
 
-void Parser::parseFactor() {
+double Parser::parseFactor() {
+    double ret =  0;
     auto const &token = _curToken;
     switch (token.type) {
         case TokenType_NUM:
-            fmt::print(" {} ", token.value);
+            ret = token.value;
             loadToken();
             break;
         
         case TokenType_LP:
             eatToken(TokenType_LP);
-            parseExpression();
+            ret = parseExpression();
             eatToken(TokenType_RP);
             break;
             
         //factor -> (+|-)term
-        case TokenType_ADD: case TokenType_SUB:
+        case TokenType_ADD:
             eatToken(_curToken.type);
-            parseTerm();
+            ret = parseTerm();
+            break;
+            
+        case TokenType_SUB:
+            eatToken(_curToken.type);
+            ret = -parseTerm();
             break;
 
         default:
             errorOut();
             break;
     }
+    
+    return ret;
 }
 
 void Parser::eatToken(TokenType toketype) {

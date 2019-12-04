@@ -24,11 +24,11 @@ public:
     void parseCmds();
     void parseCmdsPrime();
     void parseCmd();
-    void parseExpression();
-    void parseExpressionPrime();
-    void parseTerm();
-    void parseTermPrime();
-    void parseFactor();
+    double parseExpression();
+    double parseExpressionPrime(double);
+    double parseTerm();
+    double parseTermPrime(double);
+    double parseFactor();
     
     void eatToken(TokenType toketype);
     void errorOut() const;
