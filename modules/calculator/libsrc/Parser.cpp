@@ -10,11 +10,15 @@ void Parser::parseCmds() {
     }
     
     parseCmd();
+    parseCmdsPrime();
+}
+
+void Parser::parseCmdsPrime() {
     switch (_curToken.type) {
         case TokenType_SIMICOLON: case TokenType_EOL:
             eatToken(_curToken.type);
             fmt::print("\n");
-            parseCmdsPrime();
+            parseCmds();
             break;
         
         case TokenType_EOF:
@@ -25,10 +29,7 @@ void Parser::parseCmds() {
             errorOut();
             break;
     }
-}
-
-void Parser::parseCmdsPrime() {
-    parseCmds();
+    
     return;
 }
 
@@ -37,59 +38,42 @@ void Parser::parseCmd() {
 }
 
 void Parser::parseExpression() {
+    parseTerm();
+    parseExpressionPrime();
+}
+
+void Parser::parseExpressionPrime() {
     switch (_curToken.type) {
-        //positive or negtive sign;
+        //exp' -> (+|-) exp
         case TokenType_ADD: case TokenType_SUB:
             eatToken(_curToken.type);
-            parseAtomic();
+            parseExpression();
             break;
             
-        case TokenType_NUM:
-            parseTerm();
+        //exp' -> epsilon
+        case TokenType_MUL: case TokenType_DIV:
+        case TokenType_SIMICOLON: case TokenType_EOL:
+        case TokenType_RP: case TokenType_EOF:
             break;
         
-        case TokenType_LP:
-            eatToken(TokenType_LP);
-            parseExpression();
-            eatToken(TokenType_RP);
-            break;
-            
         default:
             errorOut();
             break;
     }
     
-    switch (_curToken.type) {
-        case TokenType_MUL: case TokenType_DIV:
-            eatToken(_curToken.type);
-            parseTerm();
-            break;
-        
-        case TokenType_ADD: case TokenType_SUB:
-            eatToken(_curToken.type);
-            parseExpressionPrime();
-            break;
-            
-        case TokenType_SIMICOLON: case TokenType_EOL: case TokenType_RP: case TokenType_EOF:
-            break;
-            
-        default:
-            errorOut();
-            break;
-    }
-}
-
-void Parser::parseExpressionPrime() {
-    parseExpression();
     return;
 }
 
 void Parser::parseTerm() {
-    parseAtomic();
+    parseFactor();
+    parseTermPrime();
+}
+
+void Parser::parseTermPrime() {
     switch (_curToken.type) {
         case TokenType_MUL: case TokenType_DIV:
             eatToken(_curToken.type);
-            parseTermPrime();
+            parseTerm();
             break;
         
         case TokenType_ADD: case TokenType_SUB:
@@ -101,14 +85,11 @@ void Parser::parseTerm() {
             errorOut();
             break;
     }
-}
-
-void Parser::parseTermPrime() {
-    parseTerm();
+    
     return;
 }
 
-void Parser::parseAtomic() {
+void Parser::parseFactor() {
     auto const &token = _curToken;
     switch (token.type) {
         case TokenType_NUM:
@@ -120,6 +101,12 @@ void Parser::parseAtomic() {
             eatToken(TokenType_LP);
             parseExpression();
             eatToken(TokenType_RP);
+            break;
+            
+        //factor -> (+|-)term
+        case TokenType_ADD: case TokenType_SUB:
+            eatToken(_curToken.type);
+            parseTerm();
             break;
 
         default:

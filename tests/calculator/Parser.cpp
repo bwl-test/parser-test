@@ -1,6 +1,7 @@
 #include <calculator/SMLexer.h>
 #include <calculator/Parser.h>
 #include <catch2/catch.hpp>
+#include <fmt/format.h>
 
 using namespace parsertest::calculator;
 

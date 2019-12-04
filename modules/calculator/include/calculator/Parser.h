@@ -28,10 +28,9 @@ public:
     void parseExpressionPrime();
     void parseTerm();
     void parseTermPrime();
-    void parseAtomic();
+    void parseFactor();
     
     void eatToken(TokenType toketype);
-    
     void errorOut() const;
 };
 
