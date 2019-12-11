@@ -6,3 +6,8 @@ target_include_directories(
     parserbase
     PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include
 )
+
+target_link_libraries(
+    parserbase
+    PRIVATE fmt
+)

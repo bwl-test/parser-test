@@ -1,2 +1,3 @@
+add_subdirectory(base)
 add_subdirectory(lexertl14)
 add_subdirectory(calculator)
