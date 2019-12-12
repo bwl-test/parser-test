@@ -1,5 +1,6 @@
 #include <base/parser/Parser.h>
 #include <catch2/catch.hpp>
+#include <iostream>
 
 using namespace parsertest::parser;
 
@@ -23,4 +24,10 @@ TEST_CASE("add terminal test", "parsebase") {
     parser.addGenerateRule("exprlist'", {"\n", "exprlist"});
     REQUIRE(parser.isNoneTerminal("exprlist"));
     REQUIRE(parser.isNoneTerminal("exprlist'"));
+}
+
+//rbegin().base() == end()
+TEST_CASE("vector reverse-iterator test", "parsebase") {
+    std::vector<int> vec{1,2,3,4,5};
+    std::cout << *vec.rbegin() << "\n";
 }

@@ -18,7 +18,7 @@ public:
 
 private:
 	using RuleContainer = std::vector<GenerateRule>;
-	using RuleMap = std::unordered_map<std::string, RuleContainer::iterator>;
+	using RuleMap = std::unordered_map<std::string, size_t>;
 
 	std::unordered_set<std::string> _terminals;
     std::unordered_set<std::string> _noneTerminals;

@@ -47,11 +47,11 @@ void Parser::addGenerateRule(const std::string &nt, std::vector<std::string> sym
         auto rule = GenerateRule{nt};
         rule.addBody(symbols);
         _rules.push_back(std::move(rule));
-        _ruleMap.insert(std::make_pair(nt, _rules.rbegin().base()));
+        _ruleMap.insert(std::make_pair(nt, _rules.size()-1));
         return;
     }
     
-    auto &rule = *iter->second;
+    auto &rule = _rules[iter->second];
     rule.addBody(symbols);
     return;
 }
@@ -115,8 +115,7 @@ bool Parser::symbolEpsilonable(const std::string &symbol) const {
         throw std::logic_error{fmt::format("no rules for symbol '{}'", symbol)};
     }
     
-    auto const &rule = *iter->second;
-    return ruleEpsilonable(rule);
+    return ruleEpsilonable(_rules[iter->second]);
 }
 
 bool Parser::ruleEpsilonable(const GenerateRule &rule) {
