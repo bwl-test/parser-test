@@ -70,24 +70,3 @@ TEST_CASE("add terminal test", "parsebase") {
     }
 }
 
-//rbegin().base() == end()
-TEST_CASE("vector reverse-iterator test", "parsebase") {
-    std::vector<int> vec{1,2,3,4,5};
-    std::cout << *vec.rbegin() << "\n";
-}
-
-TEST_CASE("set merge test", "parsebase") {
-    std::unordered_set<int> seta{1,2,3};
-    std::unordered_set<int> setb{3,4,5};
-    
-    REQUIRE(seta.size() == 3);
-    REQUIRE(setb.size() == 3);
-    
-    seta.merge(setb);
-    
-    fmt::print("seta size: {}, setb size: {}\n", seta.size(), setb.size());
-    
-    REQUIRE(seta.size() == 5);
-    REQUIRE(setb.size() == 1);
-    REQUIRE(*setb.begin() == 3);
-}
