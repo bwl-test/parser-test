@@ -76,7 +76,7 @@ Parser::DictType Parser::generateFirstSet() {
                     if (isTerminal(symbol)) {
                         dict[head].insert(symbol);
                     } else if (isNoneTerminal(symbol)) {
-                        dict[head].merge(dict[symbol]);
+                        dict[head].insert(dict[symbol].begin(), dict[symbol].end());
                     } else {
                         throw std::logic_error{fmt::format("symbol '{}' is not terminal or none-terminal", StringUtil::escape(symbol))};
                     }
@@ -88,6 +88,68 @@ Parser::DictType Parser::generateFirstSet() {
                     if (!symbolEpsilonable(symbol)) {
                         break;
                     }
+                }
+            }
+        });
+    }
+    
+    return dict;
+}
+
+Parser::DictType Parser::generateFollowSetWithFristSet(const DictType &firstSet) {
+    bool changed = true;;
+    
+    DictType dict;
+    dict[startSymbol()].insert(TERMINAL_EOF);
+    
+    //每次集合变更都需要记录并比较,故而抽取成lamda
+    auto doSomthingAndMarkChange = [&](const std::string &symbol, const std::function<void()> &func) {
+        auto orisize = dict[symbol].size();
+        func();
+        if (!changed && dict[symbol].size()!=orisize) {
+            changed = true;
+        }
+    };
+    
+    while (changed) {
+        changed = false;
+        
+        std::for_each(_rules.begin(), _rules.end(), [&](auto const &rule) {
+            auto const &head = rule.head();
+            auto const &bodies = rule.bodies();
+            
+            for (auto const &body : bodies) {
+                auto size = static_cast<int>(body.size());
+                
+                //1.head的follow集传播到产生式最后一个'非终端'符号里
+                auto const &lastSymbol = body.back();
+                if (isNoneTerminal(lastSymbol)) {
+                    doSomthingAndMarkChange(lastSymbol, [&]() {
+                        dict[lastSymbol].insert(dict[head].begin(), dict[head].end());
+                    });
+                }
+                
+                //2.计算'产生式体'中各'非终端'符号的follow集
+                for (auto i=size-2; i>=0; --i) {
+                    auto const &currsym = body[i];
+                    if (isTerminal(currsym)) {
+                        continue;
+                    }
+                    
+                    doSomthingAndMarkChange(currsym, [&]() {
+                        auto const &nextsym = body[i+1];
+                        
+                        if (isTerminal(nextsym)) {
+                            dict[currsym].insert(nextsym);
+                        } else if (isNoneTerminal(nextsym)) {
+                            dict[currsym].insert(firstSet.at(nextsym).begin(), firstSet.at(nextsym).end());
+                            if (symbolEpsilonable(nextsym)) {
+                                dict[currsym].insert(dict[nextsym].begin(), dict[nextsym].end());
+                            }
+                        } else {
+                            throw std::logic_error{fmt::format("symbol '{}' is not terminal or none-terminal", StringUtil::escape(nextsym))};
+                        }
+                    });
                 }
             }
         });

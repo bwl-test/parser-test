@@ -57,7 +57,6 @@ double Parser::parseExpressionPrime(double left) {
             break;
             
         //exp' -> epsilon
-        case TokenType_MUL: case TokenType_DIV:
         case TokenType_SIMICOLON: case TokenType_EOL:
         case TokenType_RP: case TokenType_EOF:
             break;

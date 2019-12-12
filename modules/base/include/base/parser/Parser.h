@@ -37,7 +37,7 @@ public:
 	void addGenerateRule(const std::string &nt, std::vector<std::string> symbols);
 
 	DictType generateFirstSet();
-	DictType generateFollowSet();
+	DictType generateFollowSetWithFristSet(const DictType &firstSet);
     
     ///accessor
     static bool ruleEpsilonable(const GenerateRule &rule);
